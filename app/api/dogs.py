@@ -15,19 +15,22 @@ from app.config import get_db
 router = APIRouter()
 
 
-@router.get("/is_adopted", status_code=200)
+@router.get("/is_adopted")
 def read_adopted_dogs(db: Session=Depends(get_db)):
     dogs = dog_crud.get_adopted_dogs(db)
-    return JSONResponse(status_code=200, content=jsonable_encoder(dogs))
+    if(dogs):
+        return JSONResponse(status_code=200, content=jsonable_encoder(dogs))
+    return JSONResponse(status_code=204, content=jsonable_encoder(dogs))
 
-
-@router.get("/{name}", status_code=200)
+@router.get("/{name}")
 def read_dog(name: str, db: Session=Depends(get_db)):
     """
     Get a dog by name
     """
     dogs = dog_crud.get_dogs(db, name)
-    return JSONResponse(status_code=200, content=jsonable_encoder(dogs))
+    if(dogs):
+        return JSONResponse(status_code=200, content=jsonable_encoder(dogs))
+    return JSONResponse(status_code=204, content=jsonable_encoder([]))
 
 
 @router.post(
@@ -62,11 +65,15 @@ def update_dog(
     Update dog information by name
     """
     dog_database = dog_crud.update_dog(db, name, dog)
+    if(dog_database):
+        return JSONResponse(
+                status_code=200, 
+                content=jsonable_encoder(dog_database)
+            )
     return JSONResponse(
-            status_code=200, 
-            content=jsonable_encoder(dog_database)
-        )
-
+                status_code=204, 
+                content=jsonable_encoder([])
+            )
 
 @router.delete("/{name}")
 def delete_dog(name: str, db:Session=Depends(get_db)):
@@ -74,4 +81,9 @@ def delete_dog(name: str, db:Session=Depends(get_db)):
     Delete a dog by name
     """
     dog = dog_crud.delete_dog(db, name)
-    return dog
+    if(dog):
+        return dog
+    return JSONResponse(
+                status_code=204, 
+                content=jsonable_encoder([])
+            )

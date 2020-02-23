@@ -21,28 +21,34 @@ def create_dog(db: Session, dog: dog_schema.DogCreate):
     """
     Create a new dog in database
     """
-    dog = dog_model.Dog(name=dog.name, is_adopted=dog.is_adopted, picture=dog.picture, create_data=dog.create_data)
-    db.add(dog)
-    db.commit()
-    db.refresh(dog)
-    return dog
-
+    try:
+        dog = dog_model.Dog(name=dog.name, is_adopted=dog.is_adopted, picture=dog.picture, create_data=dog.create_data)
+        db.add(dog)
+        db.commit()
+        db.refresh(dog)
+        return dog
+    except:
+        return None
 
 def update_dog(db: Session, dog_name: str, dog: dog_model.Dog):
     """
     Update information of a dof
     """
-    dog_database = db.query(dog_model.Dog).filter(dog_model.Dog.name == dog_name).first()
-    dog_database.is_adopted = dog.is_adopted if dog.is_adopted else dog_database.is_adopted
-    dog_database.picture = dog.picture if dog.picture else dog_database.picture
-    db.merge(dog_database)
-    db.commit()
-    db.refresh(dog_database)
-    return dog_database
-
+    try:
+        dog_database = db.query(dog_model.Dog).filter(dog_model.Dog.name == dog_name).first()
+        dog_database.is_adopted = dog.is_adopted if dog.is_adopted else dog_database.is_adopted
+        dog_database.picture = dog.picture if dog.picture else dog_database.picture
+        db.merge(dog_database)
+        db.commit()
+        db.refresh(dog_database)
+        return dog_database
+    except:
+        return None
 
 def delete_dog(db: Session, dog_name:str):
-    # print(dog_name)
+    """
+    Delete dog by name
+    """
     try:
         dog = db.query(dog_model.Dog).filter(dog_model.Dog.name == dog_name).first()
         db.delete(dog)
