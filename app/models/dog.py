@@ -1,8 +1,14 @@
-from pydantic import BaseModel
-from datetime import datetime
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy.orm import relationship
 
-class Dog(BaseModel):
-    name: str
-    picture: str
-    create_data: datetime = datetime.now()
-    is_adopted: bool
+from app.database.database import Base
+
+class Dog(Base):
+    __tablename__ = "dogs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    picture = Column(String)
+    create_data = Column(DateTime)
+    is_adopted = Column(Boolean)
+
