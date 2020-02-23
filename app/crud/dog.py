@@ -42,6 +42,7 @@ def update_dog(db: Session, dog_name: str, dog: dog_model.Dog):
 
 
 def delete_dog(db: Session, dog_name:str):
+    # print(dog_name)
     try:
         dog = db.query(dog_model.Dog).filter(dog_model.Dog.name == dog_name).first()
         db.delete(dog)

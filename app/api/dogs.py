@@ -23,13 +23,16 @@ def read_adopted_dogs(db: Session=Depends(get_db)):
 
 @router.get("/{name}", status_code=200)
 def read_dog(name: str, db: Session=Depends(get_db)):
+    """
+    Get a dog by name
+    """
     dogs = dog_crud.get_dogs(db, name)
     return JSONResponse(status_code=200, content=jsonable_encoder(dogs))
 
 
 @router.post(
-    "/{name}",
-    response_model=dog_schema.DogBase
+        "/{name}",
+        response_model=dog_schema.DogBase
     )
 def insert_dog(name: str, db: Session=Depends(get_db)):
     """
@@ -39,7 +42,10 @@ def insert_dog(name: str, db: Session=Depends(get_db)):
     if url: 
         dog = dog_schema.DogBase(name = name, is_adopted=False, picture= url)
         db_dog = dog_crud.create_dog(db, dog)
-        return JSONResponse(status_code=201, content=jsonable_encoder(db_dog))
+        return JSONResponse(
+                status_code=201, 
+                content=jsonable_encoder(db_dog)
+            )
     return JSONResponse(status_code=204, content="")
 
 
@@ -52,11 +58,20 @@ def update_dog(
         dog: dog_schema.DogBase = Body(..., example={"is_adopted": True}), 
         db: Session = Depends(get_db)
     ):
+    """
+    Update dog information by name
+    """
     dog_database = dog_crud.update_dog(db, name, dog)
-    return JSONResponse(status_code=200, content=jsonable_encoder(dog_database))
+    return JSONResponse(
+            status_code=200, 
+            content=jsonable_encoder(dog_database)
+        )
 
 
-@router.delete("/{name}", response_model=dog_schema.DogBase)
+@router.delete("/{name}")
 def delete_dog(name: str, db:Session=Depends(get_db)):
+    """
+    Delete a dog by name
+    """
     dog = dog_crud.delete_dog(db, name)
     return dog
